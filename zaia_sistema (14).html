@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>ZAIA WEAR — Sistema</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0D0D0D;--paper:#F7F4F0;--warm:#E8E1D8;--gold:#B8966A;
+  --muted:#9A9186;--white:#fff;--green:#3B6D11;--amber:#854F0B;--red:#A32D2D;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--paper);font-family:'Jost',sans-serif;color:var(--ink);font-weight:300}
+
+/* TOPBAR */
+.topbar{background:var(--ink);height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;position:sticky;top:0;z-index:100}
+.t-logo{display:flex;align-items:center;gap:10px}
+.t-ring{width:32px;height:32px;border-radius:50%;border:1px solid var(--gold);display:flex;align-items:center;justify-content:center}
+.t-ring span{font-family:'Playfair Display',serif;12px;color:var(--gold);letter-spacing:.1em}
+.t-name{font-family:'Jost',sans-serif;font-weight:200;20px;color:var(--white);letter-spacing:.2em;text-transform:uppercase}
+.t-tag{15px;color:var(--gold);letter-spacing:.14em;text-transform:uppercase}
+
+/* NAV */
+.nav{background:var(--ink);display:flex;overflow-x:auto;border-top:1px solid rgba(255,255,255,.06);padding:0;-webkit-overflow-scrolling:touch;scrollbar-width:none}.nav::-webkit-scrollbar{display:none}
+.nav::-webkit-scrollbar{display:none}
+.nav-btn{flex:0 0 auto;width:72px;padding:12px 4px 10px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;color:rgba(255,255,255,.35);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;letter-spacing:.06em;text-transform:uppercase;font-family:'Jost',sans-serif;font-weight:400;white-space:nowrap}
+.nav-btn i{22px}
+.nav-btn.on{color:var(--gold);border-bottom-color:var(--gold)}
+.nav-btn i{font-size:22px}
+
+/* SCREENS */
+.screen{display:none;padding:16px;max-width:480px;margin:0 auto;padding-bottom:40px}
+.screen.on{display:block}
+
+/* TYPOGRAPHY */
+.page-title{font-family:'Playfair Display',serif;30px;font-weight:400;color:var(--ink);margin-bottom:4px}
+.page-sub{18px;color:var(--muted);letter-spacing:.06em;margin-bottom:20px}
+.section-label{15px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--warm)}
+
+/* CARDS */
+.card{background:var(--white);border:1px solid var(--warm);border-radius:2px;padding:16px;margin-bottom:12px}
+.card-title{16px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+
+/* METRICS */
+.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.metric{background:var(--white);border:1px solid var(--warm);border-radius:2px;padding:14px}
+.metric-label{18px;color:var(--muted);margin-bottom:4px;letter-spacing:.04em}
+.metric-value{font-family:'Playfair Display',serif;34px;font-weight:400}
+.mv-gold{color:var(--gold)}
+.mv-green{color:var(--green)}
+.mv-amber{color:var(--amber)}
+
+/* PILLS */
+.pill{display:inline-flex;align-items:center;padding:4px 11px;border-radius:999px;16px;font-weight:400;letter-spacing:.04em}
+.pill-new{background:#FEF0E6;color:#8B4513}
+.pill-prep{background:#FEF9E6;color:var(--amber)}
+.pill-done{background:#EAF3DE;color:var(--green)}
+.pill-warn{background:#FCEBEB;color:var(--red)}
+.pill-gold{background:var(--ink);color:var(--gold)}
+
+/* LIST */
+.list-item{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--warm)}
+.list-item:last-child{border:none}
+.list-main{flex:1;min-width:0}
+.list-title{20px;font-weight:400;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.list-sub{18px;color:var(--muted);margin-top:1px}
+.avatar{width:34px;height:34px;border-radius:50%;background:var(--ink);display:flex;align-items:center;justify-content:center;15px;font-weight:400;color:var(--gold);flex-shrink:0;letter-spacing:.04em}
+.prod-ico{width:40px;height:40px;border-radius:2px;background:var(--paper);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.prod-ico i{22px;color:var(--gold)}
+
+/* INPUTS */
+.field{margin-bottom:12px}
+.field label{display:block;16px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.field input,.field select,.field textarea{width:100%;padding:13px 0;border:none;border-bottom:1px solid var(--warm);background:transparent;font-family:'Jost',sans-serif;20px;font-weight:300;color:var(--ink);outline:none;border-radius:0;transition:.15s}
+.field input:focus,.field select:focus,.field textarea:focus{border-bottom-color:var(--ink)}
+.field textarea{min-height:56px;resize:none;padding:8px 0}
+
+/* BUTTONS */
+.btn-primary{width:100%;padding:16px;background:var(--ink);color:var(--gold);border:none;border-radius:2px;font-family:'Jost',sans-serif;18px;font-weight:400;letter-spacing:.22em;text-transform:uppercase;cursor:pointer;transition:.15s}
+.btn-primary:active{opacity:.8}
+.btn-outline{display:inline-flex;align-items:center;gap:5px;padding:11px 16px;border-radius:2px;border:1px solid var(--warm);background:none;16px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;color:var(--muted);font-family:'Jost',sans-serif;font-weight:400;transition:.15s}
+.btn-outline:hover,.btn-outline:active{border-color:var(--ink);color:var(--ink)}
+.btn-gold{background:var(--gold);color:var(--ink);border:none;border-radius:2px;padding:11px 16px;font-family:'Jost',sans-serif;18px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;font-weight:500}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+
+/* GRID 2 */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.opt{padding:11px 8px;text-align:center;border:1px solid var(--warm);border-radius:2px;background:var(--white);cursor:pointer;font-family:'Jost',sans-serif;transition:.12s}
+.opt-name{18px;font-weight:400;color:var(--ink);display:block;margin-bottom:1px}
+.opt-sub{16px;color:var(--muted)}
+.opt.on{background:var(--ink);border-color:var(--ink)}
+.opt.on .opt-name{color:var(--gold)}
+.opt.on .opt-sub{color:rgba(255,255,255,.3)}
+
+/* ESTOQUE BAR */
+.bar-bg{background:var(--warm);border-radius:999px;height:4px;flex:1;overflow:hidden}
+.bar-fill{height:4px;border-radius:999px}
+
+/* EXTRATO */
+.extrato-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--warm)}
+.extrato-row:last-child{border:none}
+.ext-desc{19px;color:var(--ink)}
+.ext-pag{15px;color:var(--muted);margin-top:1px}
+.ext-val{20px;font-weight:400}
+
+/* WPP */
+.wpp-bubble{background:#EAF3DE;border-radius:0 10px 10px 10px;padding:12px 14px;18px;color:#173404;margin-bottom:8px;max-width:86%;line-height:1.6}
+.wpp-reply{background:var(--white);border:1px solid var(--warm);border-radius:10px 0 10px 10px;padding:12px 14px;18px;color:var(--ink);margin-bottom:8px;max-width:86%;margin-left:auto;line-height:1.6}
+.wpp-time{14px;color:var(--muted);display:block;text-align:right;margin-top:2px}
+.msg-preview{background:var(--paper);border-radius:2px;padding:14px;18px;line-height:1.8;color:var(--ink);white-space:pre-wrap;margin:10px 0;border:1px solid var(--warm)}
+
+/* CONTEUDO */
+.tom-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-bottom:14px}
+.tom-btn{padding:12px 8px;border:1px solid var(--warm);border-radius:2px;background:var(--white);cursor:pointer;18px;color:var(--muted);text-align:center;font-family:'Jost',sans-serif;font-weight:300;transition:.12s}
+.tom-btn.on{background:var(--ink);color:var(--gold);border-color:var(--ink)}
+.resultado-conteudo{display:none}
+.leg-block{background:var(--white);border:1px solid var(--warm);border-radius:2px;padding:14px;margin-bottom:10px}
+.leg-text{19px;line-height:1.9;color:var(--ink);white-space:pre-wrap;margin-bottom:12px;font-weight:300}
+.hash-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.hash-chip{padding:6px 14px;16px;letter-spacing:.08em;border:1px solid var(--warm);border-radius:999px;color:var(--muted);font-weight:400}
+.musica-block{display:flex;align-items:flex-start;gap:10px;background:var(--paper);border-radius:2px;padding:12px;border:1px solid var(--warm)}
+.m-ico{22px;flex-shrink:0;opacity:.5}
+.m-title{19px;font-weight:400;color:var(--ink);margin-bottom:2px}
+.m-sub{18px;color:var(--muted);line-height:1.5;font-weight:300}
+
+/* GEMINI BLOCK */
+.gemini-block{background:var(--ink);border-radius:2px;padding:18px;margin-bottom:14px;position:relative;overflow:hidden}
+.gemini-block::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.gemini-label{14px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:400;margin-bottom:8px;display:block}
+.gemini-desc{16px;color:rgba(255,255,255,.5);line-height:1.7;margin-bottom:14px;font-weight:300}
+.prompt-box{background:rgba(255,255,255,.04);border:1px solid rgba(184,150,106,.2);border-radius:2px;padding:12px;15px;color:rgba(255,255,255,.6);line-height:1.8;margin-bottom:14px;font-weight:300}
+.btn-gemini{width:100%;padding:13px;background:transparent;border:1px solid var(--gold);color:var(--gold);font-family:'Jost',sans-serif;15px;letter-spacing:.22em;text-transform:uppercase;font-weight:400;cursor:pointer;border-radius:2px;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-gemini:hover,.btn-gemini:active{background:var(--gold);color:var(--ink)}
+.btn-gemini-cp{width:100%;margin-top:8px;padding:11px;background:transparent;border:1px solid rgba(184,150,106,.3);color:rgba(255,255,255,.4);font-family:'Jost',sans-serif;15px;letter-spacing:.18em;text-transform:uppercase;font-weight:300;cursor:pointer;border-radius:2px;transition:.2s}
+.btn-gemini-cp:hover{border-color:var(--gold);color:var(--gold)}
+
+/* UPLOAD FOTO */
+.upload-area{border:1px solid var(--warm);border-radius:2px;padding:20px;text-align:center;cursor:pointer;background:var(--white);transition:.15s;margin-bottom:10px}
+.upload-area:hover{border-color:var(--gold)}
+.upload-status{display:none;align-items:center;gap:10px;padding:12px;background:var(--white);border:1px solid var(--warm);border-radius:2px;margin-bottom:10px;16px;color:var(--ink)}
+.upload-status.show{display:flex}
+.u-dot{width:7px;height:7px;border-radius:50%;background:#7CB87C;flex-shrink:0}
+
+.sep{height:1px;background:var(--warm);margin:14px 0}
+
+/* ALERT */
+.alert{background:var(--paper);border:1px solid var(--warm);border-radius:2px;padding:12px 14px;16px;color:var(--ink);line-height:1.6;margin-bottom:10px;display:flex;gap:8px}
+.alert i{flex-shrink:0;margin-top:1px;18px}
+.alert-warn{border-color:#EBDEC0;background:#FEFAF2}
+.alert-ok{border-color:#C0DD97;background:#F4FAE8}
+
+/* HIDE */
+.hidden{display:none}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+
+<script>
+// ══════════════════════════════════════════
+// ZAIA WEAR — Sistema v3
+// Banco de dados: Google Sheets (tempo real)
+// ══════════════════════════════════════════
+
+// ——— CONFIG ———
+let SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyDtrT3DTghE3Jg2znfY_MPpXhb5JDBvNbtCa6VgG8AQCJpi74uoy0olvAOcliPD8au/exec';
+let carregando = false;
+
+// ——— ESTADO LOCAL (cache) ———
+let produtos = [];
+let pedidos  = [];
+let clientes = [];
+let extrato  = [];
+let cxTipo = 'entrada';
+let tipoConteudo = 'post';
+let tomConteudo = 'moti';
+let varN = 0;
+let npFotoData = null;
+let contatoTipoAtual = 'cliente';
+
+const statusL   = {novo:'Novo',preparando:'Preparando',entregue:'Entregue'};
+const statusP   = {novo:'pill-new',preparando:'pill-prep',entregue:'pill-done'};
+const entregaL  = {moto:'🛵 Mototaxi',ret:'📍 Retirada',prop:'🚶 Própria'};
+
+// ══════════════════════════════════════════
+// SHEETS API
+// ══════════════════════════════════════════
+async function sheetsFetch(params){
+  if(!SHEETS_URL) return null;
+  try{
+    if(params.method === 'GET'){
+      const qs = Object.entries(params.query||{}).map(([k,v])=>k+'='+encodeURIComponent(v)).join('&');
+      const r  = await fetch(SHEETS_URL+'?'+qs, {redirect:'follow'});
+      return await r.json();
+    } else {
+      const r = await fetch(SHEETS_URL, {
+        method:'POST', redirect:'follow',
+        body: JSON.stringify(params.body)
+      });
+      return await r.json();
+    }
+  } catch(e){ console.warn('Sheets:', e.message); return null; }
+}
+
+async function sheetsCarregar(tabela){
+  const d = await sheetsFetch({method:'GET', query:{action:'carregar', tabela}});
+  return (d && d.ok) ? d.dados : [];
+}
+
+async function sheetsS(tabela, dados){
+  return await sheetsFetch({method:'POST', body:{action:'salvar', tabela, dados}});
+}
+
+async function sheetsU(tabela, id, dados){
+  return await sheetsFetch({method:'POST', body:{action:'atualizar', tabela, id, dados}});
+}
+
+async function sheetsD(tabela, id){
+  return await sheetsFetch({method:'POST', body:{action:'deletar', tabela, id}});
+}
+
+// ══════════════════════════════════════════
+// CARREGAMENTO INICIAL
+// ══════════════════════════════════════════
+async function carregarTudo(){
+  if(!SHEETS_URL){ carregarDemo(); return; }
+  mostrarLoading(true);
+  try{
+    const [p, pe, cl, ex] = await Promise.all([
+      sheetsCarregar('produtos'),
+      sheetsCarregar('pedidos'),
+      sheetsCarregar('clientes'),
+      sheetsCarregar('caixa'),
+    ]);
+    produtos = normalizarProdutos(p);
+    pedidos  = pe.map(normalizarPedido);
+    clientes = cl;
+    extrato  = ex.map(normalizarExtrato);
+    atualizarMetricas();
+  } catch(e){ carregarDemo(); }
+  mostrarLoading(false);
+}
+
+function normalizarProdutos(rows){
+  return rows.map(r => ({
+    id: r.id || Date.now(),
+    nome: r.nome || '',
+    cat: r.categoria || 'legging',
+    preco: parseFloat(r.preco) || 0,
+    tam: r.tamanhos || 'P,M,G,GG',
+    desc: r.descricao || '',
+    foto: r.foto || null,
+    estoque: {
+      P:  parseInt(r.estoque_P)  || 0,
+      M:  parseInt(r.estoque_M)  || 0,
+      G:  parseInt(r.estoque_G)  || 0,
+      GG: parseInt(r.estoque_GG) || 0,
+    }
+  }));
+}
+
+function normalizarPedido(r){
+  return {
+    id:      r.id || Date.now(),
+    nome:    r.cliente || '',
+    wpp:     r.whatsapp || '',
+    produto: r.produto || '',
+    tam:     r.tamanho || '',
+    preco:   parseFloat(r.preco) || 0,
+    status:  r.status || 'novo',
+    entrega: r.entrega || 'moto',
+    end:     r.endereco || '',
+    pag:     r.pagamento || 'Pix',
+  };
+}
+
+function normalizarExtrato(r){
+  return {
+    id:   r.id || Date.now(),
+    tipo: r.tipo || 'entrada',
+    desc: r.descricao || '',
+    val:  parseFloat(r.valor) || 0,
+    pag:  r.pagamento || 'Pix',
+  };
+}
+
+function carregarDemo(){
+  if(produtos.length) return;
+  produtos = [
+    {id:1,nome:'Legging Fitmax',cat:'legging',preco:89,tam:'P, M, G, GG',desc:'Alta compressão, cintura alta, dry-fit.',foto:null,estoque:{P:8,M:5,G:2,GG:6}},
+    {id:2,nome:'Top Zaia',cat:'top',preco:59,tam:'P, M, G',desc:'Bojo removível, costas trabalhadas.',foto:null,estoque:{P:4,M:9,G:7,GG:0}},
+    {id:3,nome:'Conjunto Fitness',cat:'conjunto',preco:189,tam:'P, M, G, GG',desc:'Legging + top combinados.',foto:null,estoque:{P:3,M:6,G:5,GG:2}},
+    {id:4,nome:'Shorts Treino',cat:'shorts',preco:69,tam:'P, M, G',desc:'Leve, bolso lateral, dry-fit.',foto:null,estoque:{P:7,M:5,G:4,GG:0}},
+  ];
+  pedidos = [
+    {id:1,nome:'Ana Souza',wpp:'(44)99001-0001',produto:'Legging Fitmax',tam:'P',preco:89,status:'preparando',entrega:'moto',end:'Rua das Flores 12',pag:'Pix'},
+    {id:2,nome:'Carla Melo',wpp:'(44)99002-0002',produto:'Top Zaia',tam:'M',preco:59,status:'entregue',entrega:'ret',end:'Academia Total Fit',pag:'Pix'},
+    {id:3,nome:'Julia Ferreira',wpp:'(44)99003-0003',produto:'Conjunto Fitness',tam:'G',preco:189,status:'novo',entrega:'prop',end:'Av. Brasil 400',pag:'Cartão'},
+  ];
+  extrato = [
+    {id:1,tipo:'entrada',desc:'Venda Legging P',val:89,pag:'Pix'},
+    {id:2,tipo:'entrada',desc:'Venda Conjunto G',val:189,pag:'Cartão'},
+    {id:3,tipo:'saida',desc:'Frete mototaxi',val:15,pag:'Dinheiro'},
+  ];
+  atualizarMetricas();
+}
+
+function mostrarLoading(show){
+  let el = document.getElementById('loading-bar');
+  if(!el){ el=document.createElement('div'); el.id='loading-bar';
+    el.style.cssText='position:fixed;top:58px;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#B8966A,transparent);z-index:999;transition:.3s';
+    document.body.appendChild(el); }
+  el.style.opacity = show ? '1' : '0';
+}
+
+function toast(msg, ok=true){
+  let el=document.getElementById('toast');
+  if(!el){ el=document.createElement('div'); el.id='toast';
+    el.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#0D0D0D;color:#B8966A;font-size:16px;letter-spacing:.06em;padding:10px 20px;border-radius:2px;opacity:0;transition:.25s;z-index:9999;pointer-events:none;white-space:nowrap';
+    document.body.appendChild(el); }
+  el.textContent = msg;
+  el.style.opacity='1'; el.style.transform='translateX(-50%) translateY(0)';
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateX(-50%) translateY(20px)'; }, 2200);
+}
+
+// ══════════════════════════════════════════
+// NAV
+// ══════════════════════════════════════════
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('sc-'+id).classList.add('on');
+  const map={inicio:0,catalogo:1,pedidos:2,estoque:3,caixa:4,wpp:5,conteudo:6,contatos:7,config:8};
+  document.querySelectorAll('.nav-btn')[map[id]].classList.add('on');
+  if(id==='catalogo') renderProd();
+  if(id==='pedidos')  renderPed('todos');
+  if(id==='estoque')  renderEst();
+  if(id==='caixa')    renderExtrato();
+  if(id==='wpp'){ renderWppProdutos(); popularSelectClientes(); }
+  if(id==='conteudo') popularSelectConteudo();
+  if(id==='contatos') renderContatos('todos');
+  if(id==='config')   renderEstoqueLote();
+}
+
+function toggleForm(id){
+  document.getElementById(id).classList.toggle('hidden');
+}
+
+// ══════════════════════════════════════════
+// CATÁLOGO
+// ══════════════════════════════════════════
+function prevFoto(e){
+  const file=e.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    npFotoData=ev.target.result;
+    const prev=document.getElementById('np-foto-preview');
+    prev.src=npFotoData; prev.style.display='block';
+    document.getElementById('np-foto-placeholder').style.display='none';
+    document.getElementById('np-foto-ok').style.display='block';
+    document.getElementById('np-foto-area').style.borderColor='var(--gold)';
+  };
+  reader.readAsDataURL(file);
+}
+
+function renderProd(){
+  const el=document.getElementById('lista-prod');
+  if(!produtos.length){ el.innerHTML='<div class="card" style="text-align:center;color:var(--muted);font-size:18px;padding:28px">Nenhum produto. Toque em + Novo.</div>'; return; }
+  el.innerHTML=produtos.map(p=>`
+  <div class="card" style="padding:0;overflow:hidden">
+    ${p.foto?`
+    <div style="width:100%;height:200px;overflow:hidden;position:relative">
+      <img src="${p.foto}" style="width:100%;height:100%;object-fit:cover">
+      <div style="position:absolute;bottom:0;left:0;right:0;height:80px;background:linear-gradient(transparent,rgba(13,13,13,.75))"></div>
+      <div style="position:absolute;bottom:12px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:flex-end">
+        <div>
+          <div style="font-size:19px;font-weight:400;color:#fff">${p.nome}</div>
+          <div style="font-size:15px;color:rgba(255,255,255,.6);margin-top:1px">${p.cat} · ${p.tam}</div>
+        </div>
+        <div style="font-family:'Playfair Display',serif;font-size:22px;color:var(--gold)">R$&nbsp;${p.preco}</div>
+      </div>
+    </div>
+    <div style="padding:14px">` :
+    `<div style="padding:14px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div>
+          <div style="font-size:19px;font-weight:400;color:var(--ink)">${p.nome}</div>
+          <div style="font-size:15px;color:var(--muted);margin-top:2px">${p.cat} · ${p.tam}</div>
+        </div>
+        <div style="font-family:'Playfair Display',serif;font-size:22px;color:var(--gold)">R$&nbsp;${p.preco}</div>
+      </div>`}
+    <div style="font-size:16px;color:var(--muted);margin-bottom:10px;line-height:1.6">${p.desc}</div>
+    <div style="font-size:15px;color:var(--muted);margin-bottom:10px">
+      ${Object.entries(p.estoque).filter(([,q])=>q>=0).map(([t,q])=>`${t}: <span style="color:${q<=2?'var(--red)':q<=4?'var(--amber)':'var(--ink)'}">${q}</span>`).join(' · ')}
+    </div>
+    <div class="btn-row">
+      <button class="btn-outline" onclick="addFotoProd(${p.id})"><i class="ti ti-camera"></i></button>
+      <button class="btn-outline" onclick="gerarDivulgacao(${p.id})"><i class="ti ti-brand-whatsapp"></i> Divulgar</button>
+      <button class="btn-outline" onclick="excluirProd(${p.id})" style="margin-left:auto"><i class="ti ti-trash"></i></button>
+    </div>
+    </div>
+  </div>`).join('');
+}
+
+async function salvarProd(){
+  const nome=document.getElementById('np-nome').value.trim();
+  if(!nome){alert('Digite o nome do produto');return;}
+  const id = Date.now();
+  const novo={
+    id, nome,
+    cat:    document.getElementById('np-cat').value,
+    preco:  parseFloat(document.getElementById('np-preco').value)||0,
+    tam:    document.getElementById('np-tam').value||'P,M,G',
+    desc:   document.getElementById('np-desc').value||'',
+    foto:   npFotoData||null,
+    estoque:{P:5,M:5,G:5,GG:5}
+  };
+  produtos.push(novo);
+  toggleForm('form-prod'); renderProd();
+  // Sheets
+  const d = await sheetsS('produtos',{
+    id, nome, categoria:novo.cat, preco:novo.preco,
+    tamanhos:novo.tam, descricao:novo.desc,
+    estoque_P:5, estoque_M:5, estoque_G:5, estoque_GG:5
+  });
+  toast(d&&d.ok ? '✓ Produto salvo no Sheets' : '✓ Produto salvo localmente');
+  // reset
+  npFotoData=null;
+  ['np-nome','np-preco','np-tam','np-desc'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('np-foto-preview').style.display='none';
+  document.getElementById('np-foto-placeholder').style.display='flex';
+  document.getElementById('np-foto-ok').style.display='none';
+}
+
+async function excluirProd(id){
+  if(!confirm('Excluir produto?')) return;
+  produtos=produtos.filter(p=>p.id!==id);
+  renderProd();
+  await sheetsD('produtos', id);
+  toast('Produto excluído');
+}
+
+function addFotoProd(id){
+  const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*';
+  inp.style.cssText='position:fixed;top:-200px;opacity:0;width:1px;height:1px';
+  document.body.appendChild(inp);
+  inp.onchange=e=>{
+    const file=e.target.files[0]; if(!file) return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      const p=produtos.find(x=>x.id===id);
+      if(p){ p.foto=ev.target.result; renderProd(); toast('Foto adicionada'); }
+    };
+    reader.readAsDataURL(file);
+    document.body.removeChild(inp);
+  };
+  inp.click();
+}
+
+function gerarDivulgacao(id){
+  const p=produtos.find(x=>x.id===id); if(!p) return;
+  document.getElementById('c-nome').value=p.nome;
+  document.getElementById('c-preco').value='R$ '+p.preco;
+  document.getElementById('c-tam').value=p.tam;
+  go('conteudo');
+}
+
+// ══════════════════════════════════════════
+// PEDIDOS
+// ══════════════════════════════════════════
+function renderPed(status){
+  const lista=document.getElementById('lista-ped');
+  const f=status==='todos'?pedidos:pedidos.filter(p=>p.status===status);
+  if(!f.length){ lista.innerHTML='<div class="card" style="text-align:center;color:var(--muted);font-size:18px;padding:28px">Nenhum pedido</div>'; return; }
+  lista.innerHTML=f.map(p=>`
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="avatar">${p.nome.split(' ').map(n=>n[0]).join('').slice(0,2)}</div>
+        <div><div class="list-title">${p.nome}</div><div class="list-sub">${p.wpp}</div></div>
+      </div>
+      <span class="pill ${statusP[p.status]}">${statusL[p.status]}</span>
+    </div>
+    <div style="height:1px;background:var(--warm);margin-bottom:10px"></div>
+    <div style="font-size:16px;color:var(--muted);display:grid;grid-template-columns:1fr 1fr;gap:6px">
+      <div>Produto<br><span style="color:var(--ink);font-size:18px">${p.produto} ${p.tam}</span></div>
+      <div>Valor<br><span style="color:var(--gold);font-size:18px;font-family:'Playfair Display',serif">R$&nbsp;${p.preco}</span></div>
+      <div>Entrega<br><span style="color:var(--ink);font-size:16px">${entregaL[p.entrega]||p.entrega}</span></div>
+      <div>Pagamento<br><span style="color:var(--ink);font-size:16px">${p.pag}</span></div>
+    </div>
+    <div style="font-size:16px;color:var(--muted);margin-top:6px">Local: <span style="color:var(--ink)">${p.end}</span></div>
+    <div class="btn-row" style="margin-top:10px">
+      ${p.status!=='entregue'?`<button class="btn-gold" onclick="avancar(${p.id})">${p.status==='novo'?'Preparar':'Entregar'}</button>`:''}
+      <button class="btn-outline" onclick="abrirWpp('${p.wpp}')"><i class="ti ti-brand-whatsapp"></i></button>
+      <button class="btn-outline" onclick="excluirPed(${p.id})" style="margin-left:auto"><i class="ti ti-trash"></i></button>
+    </div>
+  </div>`).join('');
+}
+
+async function salvarPed(){
+  const nome=document.getElementById('ped-nome').value.trim();
+  if(!nome){alert('Digite o nome da cliente');return;}
+  const pid=parseInt(document.getElementById('ped-prod').value);
+  const prod=produtos.find(p=>p.id===pid);
+  const id=Date.now();
+  const novo={id,nome,
+    wpp:      document.getElementById('ped-wpp').value,
+    produto:  prod?prod.nome:'',
+    tam:      document.getElementById('ped-tam').value,
+    preco:    prod?prod.preco:0,
+    status:   'novo',
+    entrega:  document.getElementById('ped-entrega').value,
+    end:      document.getElementById('ped-end').value,
+    pag:      document.getElementById('ped-pag').value,
+  };
+  pedidos.unshift(novo);
+  // Atualizar cliente
+  let cli = clientes.find(c=>c.nome===nome);
+  if(cli){ cli.total_pedidos=(cli.total_pedidos||0)+1; cli.total_gasto=(cli.total_gasto||0)+novo.preco;
+    await sheetsU('clientes',cli.id,{total_pedidos:cli.total_pedidos,total_gasto:cli.total_gasto});
+  } else {
+    const ncli={id:Date.now()+1,tipo:'cliente',nome,whatsapp:novo.wpp,cidade:'Montes Claros',produto:'',total_pedidos:1,total_gasto:novo.preco};
+    clientes.push(ncli); await sheetsS('clientes',ncli);
+  }
+  toggleForm('form-ped'); renderPed('todos'); atualizarMetricas();
+  const d = await sheetsS('pedidos',{id,cliente:nome,whatsapp:novo.wpp,produto:novo.produto,tamanho:novo.tam,preco:novo.preco,status:'novo',entrega:novo.entrega,endereco:novo.end,pagamento:novo.pag});
+  toast(d&&d.ok ? '✓ Pedido salvo no Sheets' : '✓ Pedido salvo localmente');
+  ['ped-nome','ped-wpp','ped-end'].forEach(i=>document.getElementById(i).value='');
+}
+
+async function avancar(id){
+  const p=pedidos.find(x=>x.id===id); if(!p) return;
+  p.status = p.status==='novo' ? 'preparando' : 'entregue';
+  renderPed('todos'); atualizarMetricas();
+  await sheetsU('pedidos', id, {status:p.status});
+  toast('Status atualizado');
+}
+
+async function excluirPed(id){
+  if(!confirm('Excluir pedido?')) return;
+  pedidos=pedidos.filter(p=>p.id!==id);
+  renderPed('todos'); atualizarMetricas();
+  await sheetsD('pedidos', id);
+  toast('Pedido excluído');
+}
+
+function filtPed(s,b){ document.querySelectorAll('#ped-tabs .opt').forEach(x=>x.classList.remove('on')); b.classList.add('on'); renderPed(s); }
+function abrirWpp(n){ window.open('https://wa.me/55'+n.replace(/\D/g,''),'_blank'); }
+
+function atualizarMetricas(){
+  document.getElementById('m-ped').textContent = pedidos.length;
+  document.getElementById('m-rec').textContent = 'R$ '+pedidos.reduce((a,p)=>a+p.preco,0);
+  document.getElementById('m-ent').textContent = pedidos.filter(p=>p.status!=='entregue').length;
+  const tot = produtos.reduce((a,p)=>a+Object.values(p.estoque).reduce((x,y)=>x+y,0),0);
+  document.getElementById('m-est').textContent = tot;
+}
+
+// ══════════════════════════════════════════
+// ESTOQUE
+// ══════════════════════════════════════════
+function renderEst(){
+  document.getElementById('lista-est').innerHTML=produtos.map(p=>{
+    const tot=Object.values(p.estoque).reduce((a,b)=>a+b,0);
+    const pct=Math.min(100,Math.round(tot/30*100));
+    const cor=tot<=5?'var(--red)':tot<=10?'var(--amber)':'var(--gold)';
+    return `<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div style="font-size:19px;font-weight:400">${p.nome}</div>
+        <span style="font-size:18px;font-family:'Playfair Display',serif;color:${cor}">${tot} un.</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+        <div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${cor}"></div></div>
+        <span style="font-size:15px;color:var(--muted);min-width:28px">${pct}%</span>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        ${Object.entries(p.estoque).map(([t,q])=>`
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+          <span style="font-size:15px;color:var(--muted);letter-spacing:.06em">${t}</span>
+          <div style="display:flex;align-items:center;gap:6px">
+            <button class="btn-outline" style="padding:4px 8px" onclick="adj(${p.id},'${t}',-1)">−</button>
+            <span style="font-size:19px;min-width:18px;text-align:center;color:${q<=2?'var(--red)':q<=4?'var(--amber)':'var(--ink)'}">${q}</span>
+            <button class="btn-outline" style="padding:4px 8px" onclick="adj(${p.id},'${t}',1)">+</button>
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function adj(pid,tam,d){
+  const p=produtos.find(x=>x.id===pid); if(!p) return;
+  p.estoque[tam]=Math.max(0,p.estoque[tam]+d);
+  renderEst(); atualizarMetricas();
+  await sheetsU('produtos', pid, {['estoque_'+tam]: p.estoque[tam]});
+}
+
+// ══════════════════════════════════════════
+// CAIXA
+// ══════════════════════════════════════════
+function setCxTipo(t,b){ cxTipo=t; document.querySelectorAll('#cx-tipo-tabs .opt').forEach(x=>x.classList.remove('on')); b.classList.add('on'); }
+
+async function lancar(){
+  const desc=document.getElementById('cx-desc').value.trim();
+  const val=parseFloat(document.getElementById('cx-val').value)||0;
+  if(!desc||!val){alert('Preencha descrição e valor');return;}
+  const id=Date.now();
+  const item={id,tipo:cxTipo,desc,val,pag:document.getElementById('cx-pag').value};
+  extrato.unshift(item);
+  document.getElementById('cx-desc').value=''; document.getElementById('cx-val').value='';
+  renderExtrato();
+  const d = await sheetsS('caixa',{id,tipo:cxTipo,descricao:desc,valor:val,pagamento:item.pag});
+  toast(d&&d.ok ? '✓ Lançado no Sheets' : '✓ Lançado localmente');
+}
+
+function renderExtrato(){
+  const ent=extrato.filter(e=>e.tipo==='entrada').reduce((a,e)=>a+e.val,0);
+  const sai=extrato.filter(e=>e.tipo==='saida').reduce((a,e)=>a+e.val,0);
+  document.getElementById('cx-ent').textContent='R$ '+ent;
+  document.getElementById('cx-sai').textContent='R$ '+sai;
+  document.getElementById('cx-sal').textContent='R$ '+(ent-sai);
+  const el=document.getElementById('extrato');
+  if(!extrato.length){ el.innerHTML='<div style="text-align:center;color:var(--muted);font-size:16px;padding:16px">Sem movimentações</div>'; return; }
+  el.innerHTML=extrato.map(e=>`
+  <div class="extrato-row">
+    <div><div class="ext-desc">${e.desc}</div><div class="ext-pag">${e.pag}</div></div>
+    <div class="ext-val" style="color:${e.tipo==='entrada'?'var(--green)':'var(--red)'}">${e.tipo==='entrada'?'+':'−'} R$ ${e.val}</div>
+  </div>`).join('');
+}
+
+// ══════════════════════════════════════════
+// WHATSAPP
+// ══════════════════════════════════════════
+const wppMsgs={
+  catalogo:`Olá! 👋 Seja bem-vinda à *ZAIA WEAR* 🩷\n\nNosso catálogo:\n• Legging Fitmax — R$89 (P, M, G, GG)\n• Top Zaia — R$59 (P, M, G)\n• Conjunto Fitness — R$189 (P, M, G, GG)\n• Shorts Treino — R$69 (P, M, G)\n\nMe diz o modelo, tamanho e endereço 💪`,
+  pedido:`Pedido confirmado! 🎉\n\n📦 *ZAIA WEAR*\n• Produto: [PRODUTO] — Tam. [TAMANHO]\n• Valor: R$[VALOR]\n• Pagamento: [PAGAMENTO]\n• Entrega: [ENDEREÇO]\n\nVou avisar quando sair 🛵`,
+  entrega:`Boa notícia! 🛵 Seu pedido *ZAIA WEAR* saiu para entrega!\n\nPrevisão: até 40 minutos 😊`,
+  pix:`💸 *Dados Pix — ZAIA WEAR*\n\nChave: [SUA CHAVE PIX]\nNome: Zaia Wear\nValor: R$[VALOR]\n\nManda o comprovante que confirmo na hora! 🩷`,
+};
+let msgAtual='catalogo';
+function showMsg(k,b){
+  msgAtual=k;
+  if(b){document.querySelectorAll('#wpp-msg-tabs .opt').forEach(x=>x.classList.remove('on'));b.classList.add('on');}
+  document.getElementById('msg-preview').textContent=wppMsgs[k].replace(/\\n/g,'\n');
+}
+function cpMsg(){ navigator.clipboard.writeText(wppMsgs[msgAtual].replace(/\\n/g,'\n')).then(()=>toast('Mensagem copiada!')); }
+function editMoto(id){ const v=prompt('Contato:',document.getElementById(id).textContent); if(v)document.getElementById(id).textContent=v; }
+
+const botResps=[
+  s=>(/legging|roupa|peça/i.test(s))?"Temos sim! Qual tamanho você usa? 😊":null,
+  s=>(/preço|quanto|valor/i.test(s))?"Legging R$89, Top R$59, Conjunto R$189, Shorts R$69 💪":null,
+  s=>(/pix|pagar/i.test(s))?"Aceitamos Pix, dinheiro e cartão! 🩷":null,
+  s=>(/entrega|endereço/i.test(s))?"Entrego pelo mototaxi parceiro ou retirada em ponto combinado 🛵":null,
+  ()=>"Claro! Me conta mais detalhes 😊",
+];
+function enviarMsg(){
+  const inp=document.getElementById('chat-input'); const msg=inp.value.trim(); if(!msg) return;
+  const chat=document.getElementById('chat-area');
+  const h=new Date().toTimeString().slice(0,5);
+  chat.innerHTML+=`<div class="wpp-bubble">${msg}<span class="wpp-time">${h}</span></div>`;
+  inp.value=''; chat.scrollTop=9999;
+  setTimeout(()=>{
+    const r=botResps.reduce((a,fn)=>a||(fn(msg)||null),null);
+    chat.innerHTML+=`<div class="wpp-reply">${r}<span class="wpp-time">${h} ✓✓</span></div>`;
+    chat.scrollTop=9999;
+  },700);
+}
+
+// ══════════════════════════════════════════
+// CONTATOS
+// ══════════════════════════════════════════
+function setContatoTipo(t,b){
+  contatoTipoAtual=t;
+  document.querySelectorAll('#contato-tipo-tabs .opt').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+}
+
+async function salvarContato(){
+  const nome=document.getElementById('ct-nome').value.trim();
+  if(!nome){alert('Digite o nome');return;}
+  const id=Date.now();
+  const c={id,tipo:contatoTipoAtual,nome,
+    whatsapp:document.getElementById('ct-wpp').value,
+    cidade:document.getElementById('ct-cidade').value||'Montes Claros',
+    produto:document.getElementById('ct-prod').value||'',
+    total_pedidos:0,total_gasto:0
+  };
+  clientes.push(c);
+  const tabela=contatoTipoAtual==='cliente'?'clientes':'fornecedores';
+  toggleForm('form-contato'); renderContatos('todos');
+  const d=await sheetsS(tabela,c);
+  toast(d&&d.ok?'✓ Contato salvo no Sheets':'✓ Contato salvo');
+  ['ct-nome','ct-wpp','ct-cidade','ct-prod'].forEach(i=>document.getElementById(i).value='');
+}
+
+function renderContatos(filtro){
+  const lista=document.getElementById('lista-contatos');
+  const f=filtro==='todos'?clientes:clientes.filter(c=>c.tipo===filtro);
+  if(!f.length){ lista.innerHTML='<div class="card" style="text-align:center;color:var(--muted);font-size:18px;padding:28px">Nenhum contato</div>'; return; }
+  lista.innerHTML=f.map(c=>`
+  <div class="card">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+      <div class="avatar">${c.nome.split(' ').map(n=>n[0]).join('').slice(0,2)}</div>
+      <div style="flex:1">
+        <div style="font-size:19px;font-weight:400">${c.nome}</div>
+        <div style="font-size:15px;color:var(--muted)">${c.cidade||'Montes Claros'}</div>
+      </div>
+      <span class="pill ${c.tipo==='cliente'?'pill-gold':'pill-prep'}">${c.tipo==='cliente'?'Cliente':'Fornecedor'}</span>
+    </div>
+    ${c.tipo==='cliente'?`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+      <div style="background:var(--paper);padding:10px;text-align:center;border-radius:2px">
+        <div style="font-size:15px;color:var(--muted);margin-bottom:2px">Pedidos</div>
+        <div style="font-size:22px;font-family:'Playfair Display',serif">${c.total_pedidos||0}</div>
+      </div>
+      <div style="background:var(--paper);padding:10px;text-align:center;border-radius:2px">
+        <div style="font-size:15px;color:var(--muted);margin-bottom:2px">Total gasto</div>
+        <div style="font-size:22px;font-family:'Playfair Display',serif;color:var(--gold)">R$&nbsp;${c.total_gasto||0}</div>
+      </div>
+    </div>`:c.produto?`<div style="font-size:16px;color:var(--muted);margin-bottom:10px">Fornece: <span style="color:var(--ink)">${c.produto}</span></div>`:''}
+    <div class="btn-row">
+      <button class="btn-outline" onclick="abrirWpp('${c.whatsapp||''}')"><i class="ti ti-brand-whatsapp"></i> ${c.whatsapp||'—'}</button>
+      <button class="btn-outline" onclick="removerContato(${c.id})" style="margin-left:auto"><i class="ti ti-trash"></i></button>
+    </div>
+  </div>`).join('');
+}
+
+function filtContatos(f,b){ document.querySelectorAll('#contato-filter-tabs .opt').forEach(x=>x.classList.remove('on')); b.classList.add('on'); renderContatos(f); }
+
+async function removerContato(id){
+  if(!confirm('Remover contato?')) return;
+  const c=clientes.find(x=>x.id===id);
+  clientes=clientes.filter(x=>x.id!==id);
+  renderContatos('todos');
+  await sheetsD(c&&c.tipo==='fornecedor'?'fornecedores':'clientes', id);
+  toast('Contato removido');
+}
+
+// ══════════════════════════════════════════
+// CONTEÚDO
+// ══════════════════════════════════════════
+// ══ CONTEÚDO ══
+let fmtConteudo='quadrado', tomConteudo2='elegante', fundoConteudo='substituir', palConteudo='neutro';
+let prodConteudoAtual = null;
+
+function sFmt2(f,b){ fmtConteudo=f; document.querySelectorAll('#fmt-tabs .opt').forEach(x=>x.classList.remove('on')); b.classList.add('on'); }
+function sTom2(t,b){ tomConteudo2=t; document.querySelectorAll('#tom-tabs .opt').forEach(x=>x.classList.remove('on')); b.classList.add('on'); }
+function setFundo(f,b){ fundoConteudo=f; document.querySelectorAll('#fundo-tabs .opt').forEach(x=>x.classList.remove('on')); b.classList.add('on'); }
+function setPal(p,b){ palConteudo=p; document.querySelectorAll('#pal-tabs .opt').forEach(x=>x.classList.remove('on')); b.classList.add('on'); }
+
+function selecionarProdConteudo(id){
+  const p = produtos.find(x=>String(x.id)===String(id));
+  prodConteudoAtual = p || null;
+  const info = document.getElementById('c-prod-info');
+  if(p){
+    info.style.display='block';
+    document.getElementById('c-prod-nome').textContent = p.nome + ' — R$ ' + p.preco;
+    document.getElementById('c-prod-det').textContent = 'Tamanhos: ' + p.tam + ' · ' + p.desc;
+  } else {
+    info.style.display='none';
+  }
+}
+
+function gerarPrompts(){
+  const p = prodConteudoAtual;
+  if(!p){ alert('Selecione um produto do catálogo'); return; }
+
+  const fmtMap = {
+    quadrado: 'formato quadrado 1:1',
+    retrato:  'formato retrato 4:5',
+    stories:  'formato vertical 9:16 para Stories',
+    carrossel:'formato quadrado 1:1 (primeiro slide de carrossel)',
+  };
+
+  const palMap = {
+    neutro: 'paleta neutra: cinza queimado, bege, off-white, creme — tons de terra discretos e sofisticados',
+    escuro: 'paleta escura: preto profundo, carvão, com toque dourado sutil',
+    rosé:   'paleta rosé: rosa nude, blush, creme rosado — feminino e elegante',
+    terra:  'paleta terra: caramelo, toffee, marrom claro, areia — quente e orgânico',
+  };
+
+  const tomMap = {
+    elegante:     'elegante e minimalista — menos é mais, muito espaço em branco, tipografia refinada, sem exageros',
+    motivacional: 'energético e motivacional — dinâmico, vibrante, com sensação de movimento e força',
+    descontraido: 'descontraído e próximo — leve, natural, como uma amiga recomendando',
+    vendedor:     'direto ao ponto — destaca preço, urgência e call to action clara',
+  };
+
+  const fundoInstr = fundoConteudo === 'substituir'
+    ? `FUNDO: Remova completamente o fundo original da foto. Substitua por um ambiente de estúdio discreto e sofisticado: ${palMap[palConteudo]}. Use uma parede lisa com uma quina de luz suave — uma faixa de luz natural vinda de uma janela lateral que cria um degradê na parede, dando profundidade sem revelar claramente se é real ou digital. O chão deve ter uma textura sutil (concreto polido ou madeira clara desgastada). A iluminação do fundo deve ser coerente com a luz que incide sobre a pessoa — se a pessoa tem luz vinda da esquerda, o fundo deve reforçar isso. O resultado deve parecer uma campanha de moda profissional, não uma edição de IA óbvia.`
+    : `FUNDO: Mantenha o fundo original da foto. Apenas ajuste levemente o tratamento de cor para harmonizar com a paleta: ${palMap[palConteudo]}.`;
+
+  const promptArte = `Você é um diretor criativo de moda fitness. Edite esta foto da modelo para criar uma arte de post para Instagram.
+
+PRODUTO: ${p.nome}
+FORMATO: ${fmtMap[fmtConteudo]}
+ESTILO: ${tomMap[tomConteudo2]}
+PALETA: ${palMap[palConteudo]}
+
+${fundoInstr}
+
+COMPOSIÇÃO: Deixe uma área limpa — aproximadamente 30 a 40% da imagem — para texto. Se formato quadrado ou retrato, essa área fica na parte inferior ou lateral esquerda. Se stories, na parte inferior.
+
+TRATAMENTO DA IMAGEM: Aplique um color grading sutil que combine com a paleta escolhida. A pele deve ficar natural. As cores da roupa devem ser fiéis ao produto real.
+
+IDENTIDADE: O resultado deve parecer sempre o mesmo estúdio — consistência visual entre todos os posts da marca ZAIA WEAR. Minimalista, sofisticado, moderno. Nada exagerado.
+
+IMPORTANTE: Não adicione texto, logos ou elementos gráficos na imagem. Apenas a composição fotográfica.`;
+
+  const promptLegenda = `Você é um copywriter especialista em moda fitness e Instagram brasileiro.
+
+Crie uma legenda para um post da loja ZAIA WEAR com as seguintes informações:
+
+PRODUTO: ${p.nome}
+PREÇO: R$ ${p.preco}
+TAMANHOS: ${p.tam}
+DESCRIÇÃO: ${p.desc}
+FORMATO DO POST: ${fmtMap[fmtConteudo]}
+TOM: ${tomMap[tomConteudo2]}
+LOCALIZAÇÃO DA MARCA: Montes Claros, MG
+
+REGRAS:
+- A legenda deve conversar com a imagem do post — elegante, clean, sem exageros
+- Máximo 5 linhas de texto corrido + hashtags
+- Inclua exatamente 5 hashtags relevantes, sendo pelo menos 2 sobre Montes Claros
+- Inclua um call to action claro para chamar no WhatsApp ou comentar QUERO
+- Tom: ${tomMap[tomConteudo2]}
+- A legenda deve parecer escrita por uma pessoa real, não por uma IA
+- Termine com: 👉 @usezaiafitness
+
+Gere apenas a legenda pronta para copiar e colar, sem explicações.`;
+
+  const promptCompleto = `${promptArte}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PARTE 2 — LEGENDA DO POST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${promptLegenda}`;
+
+  document.getElementById('prompt-completo').textContent = promptCompleto;
+  document.getElementById('res-prompts').style.display = 'block';
+  document.getElementById('res-prompts').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function cpPromptCompleto(){
+  navigator.clipboard.writeText(document.getElementById('prompt-completo').textContent)
+    .then(()=>toast('✓ Prompt copiado! Abra o Gemini, cole e anexe a foto.'));
+}
+
+// fillConteudoProd substituída
+function popularSelectConteudo(){
+  const sel=document.getElementById('c-sel');
+  if(!sel) return;
+  sel.innerHTML='<option value="">Escolher produto...</option>'+
+    produtos.map(p=>`<option value="${p.id}">${p.nome} — R$${p.preco}</option>`).join('');
+}
+
+const opens={
+  moti:['Treino sério exige roupa séria.','Vista a mentalidade de campeã.','Energia de quem não para.'],
+  eleg:['Porque estilo também se treina.','Autêntica do início ao fim.','Sofisticação que vai além da academia.'],
+  desc:['Gente, precisava mostrar isso! 😍','Ok, me apaixonei.','Quando a roupa te dá vontade de treinar…'],
+  vend:['CHEGOU! E está incrível.','Corre que vai acabar!','Estoque limitado — corre!'],
+};
+const ctas={moti:'Chama no WhatsApp e garante a sua 👊',eleg:'Reserve a sua. Mande mensagem ✨',desc:'Comenta QUERO ou chama no zap 😍',vend:'ÚLTIMAS UNIDADES! Chama agora 🔥'};
+const bens=['Alta compressão que não cede no treino 💪','Tecido dry-fit premium ✨','Modelagem que valoriza todos os corpos 🌟','Cor que não desbota ⚡','Cós firme que não escorrega 🔥'];
+const hashSets=[
+  ['#ZaiaWear','#MontesClаros','#ModaFitnessMC','#AcademiaMC','#LookFitness'],
+  ['#ZaiaWear','#MontesClаrosMG','#FitnessMC','#RoupaDeTreino','#MulherFit'],
+  ['#ZaiaWear','#MCFitness','#MontesClаros','#ConjuntoFitness','#ZaiaOfficial'],
+];
+const musicas=[
+  {t:'Levanta — Ludmilla',s:'Energia e empoderamento. Ótima para reels.'},
+  {t:'Tá OK — Dennis DJ',s:'Leve e trending. Muito usada em moda fitness.'},
+  {t:'Por Supuesto — Bad Bunny',s:'Sofisticado, ritmo de desfile.'},
+  {t:'Me Sinto Bem — Seu Jorge',s:'Elegante e positivo.'},
+  {t:'Bota Pra Funcionar — Anitta',s:'Animada e popular no Instagram.'},
+];
+function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+function pickN(a,n){ return [...a].sort(()=>Math.random()-.5).slice(0,n); }
+
+function gerarConteudo(){
+  const nome=document.getElementById('c-nome').value.trim()||'Conjunto Canelado Premium';
+  const preco=document.getElementById('c-preco').value.trim()||'R$ 189';
+  const tam=document.getElementById('c-tam').value.trim()||'P · M · G · GG';
+  varN=(varN+1)%3;
+  const open=pick(opens[tomConteudo]);
+  const bensArr=pickN(bens,3).join('\n');
+  const cta=ctas[tomConteudo];
+  let legenda='';
+  if(tipoConteudo==='post'||tipoConteudo==='stories'){
+    legenda=`${open}\n\n${nome} — ${preco}\n\n${bensArr}\n\nTamanhos: ${tam}\n\n${cta}\n\n👉 @usezaiafitness`;
+    document.getElementById('res-tipo-label').textContent='Legenda — '+(tipoConteudo==='post'?'Post':'Stories');
+    document.getElementById('res-slides-wrap').classList.add('hidden');
+    document.getElementById('res-roteiro-wrap').classList.add('hidden');
+  } else if(tipoConteudo==='carrossel'){
+    legenda=`${open}\n\n${nome} — ${preco}\nTamanhos: ${tam}\n\n${cta}\n\n👉 @usezaiafitness`;
+    document.getElementById('res-tipo-label').textContent='Legenda — Carrossel';
+    const stxts=[`${nome}\n${preco}`,`Por que você vai amar:\n✔ Alta qualidade\n✔ Modelagem perfeita\n✔ Tecido premium`,`Detalhes:\n${tam}\nEntrega em Montes Claros`,`"Melhor compra que fiz!"\n"Não consigo parar de usar!"`,`Garante a sua!\n${preco} · ${tam}\nChama no WhatsApp 🩷`];
+    document.getElementById('res-slides-wrap').innerHTML='<div class="card-title" style="font-size:15px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:14px 0 10px">5 slides</div>'+['Capa','Benefícios','Detalhes','Depoimentos','CTA'].map((st,i)=>`<div class="card" style="border-left:2px solid var(--gold);padding-left:14px;margin-bottom:8px"><div style="font-size:14px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Slide ${i+1} — ${st}</div><div style="font-size:18px;line-height:1.7;white-space:pre-wrap;margin-bottom:8px">${stxts[i]}</div></div>`).join('');
+    document.getElementById('res-slides-wrap').classList.remove('hidden');
+    document.getElementById('res-roteiro-wrap').classList.add('hidden');
+  } else {
+    legenda=`${open}\n\n${nome} — ${preco}\nTamanhos: ${tam}\n\n${cta}\n\n👉 @usezaiafitness`;
+    document.getElementById('res-tipo-label').textContent='Legenda — Reel';
+    const cenas=['[0–3s] Apareça de frente com a peça vestida.','[3–8s] Fale o nome e o preço. Mostre os detalhes.','[8–18s] Mostre em movimento — agache, pule, dance.','[18–25s] Giro de 360°.','[25–30s] Olhe para a câmera: "Chama no WhatsApp ou comenta QUERO!"'];
+    document.getElementById('res-roteiro-wrap').innerHTML='<div class="card" style="margin-bottom:10px"><div class="card-title">Roteiro</div>'+cenas.map(c=>`<div style="padding:8px 0;border-bottom:1px solid var(--warm);font-size:16px;color:var(--muted);line-height:1.6"><span style="color:var(--gold);font-weight:500">${c.split(']')[0]}]</span>${c.split(']')[1]||''}</div>`).join('')+'</div>';
+    document.getElementById('res-roteiro-wrap').classList.remove('hidden');
+    document.getElementById('res-slides-wrap').classList.add('hidden');
+  }
+  document.getElementById('res-leg').textContent=legenda;
+  document.getElementById('res-hash').innerHTML=hashSets[varN%hashSets.length].map(h=>`<span class="hash-chip">${h}</span>`).join('');
+  const m=pick(musicas);
+  document.getElementById('res-m-t').textContent=m.t;
+  document.getElementById('res-m-s').textContent=m.s;
+  document.getElementById('res-conteudo').style.display='block';
+  document.getElementById('res-conteudo').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function abrirGemini(){
+  window.open('https://gemini.google.com/app','_blank');
+}
+function cpPrompt(){ navigator.clipboard.writeText(document.getElementById('prompt-gemini').textContent).then(()=>toast('Prompt copiado! Cole no Gemini com a foto.')); }
+function cpEl(id){ navigator.clipboard.writeText(document.getElementById(id).textContent).then(()=>toast('Copiado!')); }
+function cpHash(){ navigator.clipboard.writeText([...document.querySelectorAll('.hash-chip')].map(x=>x.textContent).join(' ')).then(()=>toast('Hashtags copiadas!')); }
+
+// ══════════════════════════════════════════
+// CONFIG / ESTOQUE EM LOTE
+// ══════════════════════════════════════════
+async function conectarSheets(){
+  await testarSheets();
+}
+
+async function testarSheets(){
+  mostrarStatus('sheets-status','⏳ Verificando conexão...','#FEF9E6','#854F0B');
+  try{
+    const d=await sheetsFetch({method:'GET',query:{action:'ping'}});
+    if(d&&d.ok){
+      mostrarStatus('sheets-status','✓ '+d.msg,'#EAF3DE','#3B6D11');
+      await sheetsFetch({method:'GET',query:{action:'init'}});
+    } else {
+      mostrarStatus('sheets-status','✗ Erro na conexão com o Sheets','#FCEBEB','#A32D2D');
+    }
+  } catch(e){
+    mostrarStatus('sheets-status','✗ Falha: '+e.message,'#FCEBEB','#A32D2D');
+  }
+}
+
+function mostrarStatus(id,txt,bg,cor){
+  const el=document.getElementById(id);
+  if(!el) return;
+  el.style.display='block'; el.style.background=bg; el.style.color=cor; el.textContent=txt;
+}
+
+function renderEstoqueLote(){
+  const el=document.getElementById('estoque-lote'); if(!el) return;
+  el.innerHTML=produtos.map(p=>`
+  <div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--warm)">
+    <div style="font-size:18px;font-weight:400;color:var(--ink);margin-bottom:8px">${p.nome}</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      ${Object.entries(p.estoque).map(([t,q])=>`
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+        <span style="font-size:14px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase">${t}</span>
+        <input type="number" value="${q}" min="0" id="lote-${p.id}-${t}"
+          style="width:52px;padding:8px 6px;border:1px solid var(--warm);border-radius:2px;font-size:18px;text-align:center;font-family:'Jost',sans-serif;background:var(--white);outline:none"
+          onfocus="this.style.borderColor='var(--ink)'" onblur="this.style.borderColor='var(--warm)'">
+      </div>`).join('')}
+    </div>
+  </div>`).join('');
+}
+
+async function salvarEstoqueLote(){
+  for(const p of produtos){
+    const updates={};
+    Object.keys(p.estoque).forEach(t=>{
+      const inp=document.getElementById('lote-'+p.id+'-'+t);
+      if(inp){ const v=parseInt(inp.value)||0; p.estoque[t]=v; updates['estoque_'+t]=v; }
+    });
+    await sheetsU('produtos',p.id,updates);
+  }
+  toast('✓ Estoque atualizado!');
+  renderEst(); atualizarMetricas();
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', async function(){
+  // URL já embutida no código — conexão automática
+  // Preencher select de pedidos (será recarregado)
+  const sel=document.getElementById('ped-prod');
+  if(sel) sel.innerHTML='<option>Carregando...</option>';
+  // Carregar dados
+  await carregarTudo();
+  // Preencher select de pedidos com produtos carregados
+  if(sel) sel.innerHTML=produtos.map(p=>`<option value="${p.id}">${p.nome} — R$${p.preco}</option>`).join('');
+  // Chat enter
+  const ci=document.getElementById('chat-input');
+  if(ci) ci.addEventListener('keydown',e=>{ if(e.key==='Enter') enviarMsg(); });
+  // wpp inicializado ao abrir a aba
+  // Recarregar a cada 5 minutos se conectado
+  if(SHEETS_URL){
+    setInterval(async()=>{
+      await carregarTudo();
+      atualizarMetricas();
+    }, 5*60*1000);
+  }
+});
+</script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="t-logo">
+    <div class="t-ring"><span>ZAIA</span></div>
+    <div>
+      <div class="t-name">Zaia Wear</div>
+    </div>
+  </div>
+  <div class="t-tag">Sistema</div>
+</div>
+
+<nav class="nav">
+  <button class="nav-btn on" onclick="go('inicio')"><i class="ti ti-home"></i>Início</button>
+  <button class="nav-btn" onclick="go('catalogo')"><i class="ti ti-shirt"></i>Catálogo</button>
+  <button class="nav-btn" onclick="go('pedidos')"><i class="ti ti-clipboard-list"></i>Pedidos</button>
+  <button class="nav-btn" onclick="go('estoque')"><i class="ti ti-box"></i>Estoque</button>
+  <button class="nav-btn" onclick="go('caixa')"><i class="ti ti-cash"></i>Caixa</button>
+  <button class="nav-btn" onclick="go('wpp')"><i class="ti ti-brand-whatsapp"></i>WhatsApp</button>
+  <button class="nav-btn" onclick="go('conteudo')"><i class="ti ti-sparkles"></i>Conteúdo</button>
+  <button class="nav-btn" onclick="go('contatos')"><i class="ti ti-address-book"></i>Contatos</button>
+  <button class="nav-btn" onclick="go('config')"><i class="ti ti-settings"></i>Config</button>
+</nav>
+
+<!-- ══════════════ INÍCIO ══════════════ -->
+<div id="sc-inicio" class="screen on">
+  <div class="page-title">Bom dia, Zaia ✦</div>
+  <div class="page-sub">Resumo do dia</div>
+
+  <div class="metric-grid">
+    <div class="metric"><div class="metric-label">Pedidos hoje</div><div class="metric-value mv-gold" id="m-ped">7</div></div>
+    <div class="metric"><div class="metric-label">Receita hoje</div><div class="metric-value mv-green" id="m-rec">R$&nbsp;940</div></div>
+    <div class="metric"><div class="metric-label">A entregar</div><div class="metric-value mv-amber" id="m-ent">3</div></div>
+    <div class="metric"><div class="metric-label">Em estoque</div><div class="metric-value" id="m-est">38</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Últimos pedidos</div>
+    <div class="list-item">
+      <div class="avatar">AN</div>
+      <div class="list-main"><div class="list-title">Ana Souza</div><div class="list-sub">Legging Fitmax P · R$&nbsp;89</div></div>
+      <span class="pill pill-prep">Preparando</span>
+    </div>
+    <div class="list-item">
+      <div class="avatar">CM</div>
+      <div class="list-main"><div class="list-title">Carla Melo</div><div class="list-sub">Top Zaia M · R$&nbsp;59</div></div>
+      <span class="pill pill-done">Entregue</span>
+    </div>
+    <div class="list-item">
+      <div class="avatar">JF</div>
+      <div class="list-main"><div class="list-title">Julia Ferreira</div><div class="list-sub">Conjunto G · R$&nbsp;189</div></div>
+      <span class="pill pill-new">Novo</span>
+    </div>
+    <div class="btn-row"><button class="btn-outline" onclick="go('pedidos')">Ver todos <i class="ti ti-arrow-right"></i></button></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Alertas de estoque</div>
+    <div class="list-item">
+      <div class="prod-ico"><i class="ti ti-shirt"></i></div>
+      <div class="list-main"><div class="list-title">Legging Fitmax G</div><div class="list-sub">2 unidades restantes</div></div>
+      <span class="pill pill-warn">Crítico</span>
+    </div>
+    <div class="list-item">
+      <div class="prod-ico"><i class="ti ti-shirt"></i></div>
+      <div class="list-main"><div class="list-title">Top Zaia P</div><div class="list-sub">4 unidades restantes</div></div>
+      <span class="pill pill-prep">Baixo</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ CATÁLOGO ══════════════ -->
+<div id="sc-catalogo" class="screen">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:20px">
+    <div><div class="page-title">Catálogo</div><div class="page-sub">Seus produtos</div></div>
+    <button class="btn-gold" onclick="toggleForm('form-prod')">+ Novo</button>
+  </div>
+
+  <div id="form-prod" class="card hidden">
+    <div class="card-title">Novo produto</div>
+
+    <div class="field" style="margin-bottom:16px">
+      <label>Foto da peça</label>
+      <div id="np-foto-area" onclick="document.getElementById('np-foto-input').click()" style="border:1px solid var(--warm);border-radius:2px;height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;background:var(--paper);overflow:hidden;position:relative;transition:.15s">
+        <img id="np-foto-preview" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+        <div id="np-foto-placeholder" style="display:flex;flex-direction:column;align-items:center;gap:6px">
+          <i class="ti ti-camera-up" style="font-size:32px;color:var(--gold)"></i>
+          <span style="font-size:16px;color:var(--muted)">Toque para adicionar foto</span>
+        </div>
+        <div id="np-foto-ok" style="display:none;position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.5);color:#fff;font-size:15px;padding:3px 8px;border-radius:999px">✓ foto adicionada</div>
+      </div>
+      <input type="file" id="np-foto-input" accept="image/*" style="position:fixed;top:-200px;left:-200px;opacity:0;width:1px;height:1px" onchange="prevFoto(event)">
+    </div>
+
+    <div class="field"><label>Nome</label><input id="np-nome" type="text" placeholder="Legging Fitmax"></div>
+    <div class="field"><label>Categoria</label><select id="np-cat"><option value="legging">Legging</option><option value="top">Top</option><option value="conjunto">Conjunto</option><option value="shorts">Shorts</option></select></div>
+    <div class="field"><label>Preço (R$)</label><input id="np-preco" type="number" placeholder="89"></div>
+    <div class="field"><label>Tamanhos</label><input id="np-tam" type="text" placeholder="P, M, G, GG"></div>
+    <div class="field"><label>Descrição</label><textarea id="np-desc" placeholder="Descreva os diferenciais da peça"></textarea></div>
+    <div class="btn-row">
+      <button class="btn-primary" onclick="salvarProd()">Salvar produto</button>
+      <button class="btn-outline" onclick="toggleForm('form-prod')">Cancelar</button>
+    </div>
+  </div>
+
+  <div id="lista-prod"></div>
+</div>
+
+<!-- ══════════════ PEDIDOS ══════════════ -->
+<div id="sc-pedidos" class="screen">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:20px">
+    <div><div class="page-title">Pedidos</div><div class="page-sub">Gerencie seus pedidos</div></div>
+    <button class="btn-gold" onclick="toggleForm('form-ped')">+ Novo</button>
+  </div>
+
+  <div id="form-ped" class="card hidden">
+    <div class="card-title">Registrar pedido</div>
+    <div class="field"><label>Nome da cliente</label><input id="ped-nome" type="text" placeholder="Nome completo"></div>
+    <div class="field"><label>WhatsApp</label><input id="ped-wpp" type="tel" placeholder="(44) 99999-0000"></div>
+    <div class="field"><label>Produto</label><select id="ped-prod"></select></div>
+    <div class="field"><label>Tamanho</label><select id="ped-tam"><option>P</option><option>M</option><option>G</option><option>GG</option></select></div>
+    <div class="field"><label>Entrega</label><select id="ped-entrega"><option value="moto">🛵 Mototaxi</option><option value="ret">📍 Retirada</option><option value="prop">🚶 Própria</option></select></div>
+    <div class="field"><label>Endereço / Ponto</label><input id="ped-end" type="text" placeholder="Rua, número ou referência"></div>
+    <div class="field"><label>Pagamento</label><select id="ped-pag"><option>Pix</option><option>Dinheiro</option><option>Cartão</option></select></div>
+    <div class="btn-row">
+      <button class="btn-primary" onclick="salvarPed()">Salvar pedido</button>
+      <button class="btn-outline" onclick="toggleForm('form-ped')">Cancelar</button>
+    </div>
+  </div>
+
+  <div class="grid2" style="margin-bottom:16px" id="ped-tabs">
+    <button class="opt on" onclick="filtPed('todos',this)"><span class="opt-name">Todos</span></button>
+    <button class="opt" onclick="filtPed('novo',this)"><span class="opt-name">Novos</span></button>
+    <button class="opt" onclick="filtPed('preparando',this)"><span class="opt-name">Preparando</span></button>
+    <button class="opt" onclick="filtPed('entregue',this)"><span class="opt-name">Entregues</span></button>
+  </div>
+
+  <div id="lista-ped"></div>
+</div>
+
+<!-- ══════════════ ESTOQUE ══════════════ -->
+<div id="sc-estoque" class="screen">
+  <div class="page-title">Estoque</div>
+  <div class="page-sub">Controle por produto e tamanho</div>
+  <div id="lista-est"></div>
+</div>
+
+<!-- ══════════════ CAIXA ══════════════ -->
+<div id="sc-caixa" class="screen">
+  <div class="page-title">Caixa</div>
+  <div class="page-sub">Movimentações do dia</div>
+
+  <div class="metric-grid">
+    <div class="metric"><div class="metric-label">Entrada</div><div class="metric-value mv-green" id="cx-ent">R$&nbsp;940</div></div>
+    <div class="metric"><div class="metric-label">Saída</div><div class="metric-value mv-amber" id="cx-sai">R$&nbsp;80</div></div>
+    <div class="metric" style="grid-column:span 2"><div class="metric-label">Saldo do dia</div><div class="metric-value mv-gold" id="cx-sal">R$&nbsp;860</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Lançar movimentação</div>
+    <div class="grid2" id="cx-tipo-tabs">
+      <button class="opt on" onclick="setCxTipo('entrada',this)"><span class="opt-name">Entrada</span></button>
+      <button class="opt" onclick="setCxTipo('saida',this)"><span class="opt-name">Saída</span></button>
+    </div>
+    <div class="field"><label>Descrição</label><input id="cx-desc" type="text" placeholder="Ex: Venda legging / Frete moto"></div>
+    <div class="field"><label>Valor (R$)</label><input id="cx-val" type="number" placeholder="0,00"></div>
+    <div class="field"><label>Pagamento</label><select id="cx-pag"><option>Pix</option><option>Dinheiro</option><option>Cartão</option></select></div>
+    <button class="btn-primary" onclick="lancar()">Lançar</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Extrato</div>
+    <div id="extrato"></div>
+  </div>
+</div>
+
+<!-- ══════════════ WHATSAPP ══════════════ -->
+<div id="sc-wpp" class="screen">
+  <div class="page-title">WhatsApp</div>
+  <div class="page-sub">Monte a mensagem e envie direto</div>
+
+  <!-- TIPO DE MENSAGEM -->
+  <div class="section-label">Tipo de mensagem</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px" id="wpp-tipo-tabs">
+    <button class="opt on" onclick="setWppTipo('catalogo',this)"><span class="opt-name">📋 Catálogo</span><span class="opt-sub">Enviar produtos</span></button>
+    <button class="opt" onclick="setWppTipo('pedido',this)"><span class="opt-name">✅ Confirmar pedido</span><span class="opt-sub">Resumo do pedido</span></button>
+    <button class="opt" onclick="setWppTipo('entrega',this)"><span class="opt-name">🛵 Saiu p/ entrega</span><span class="opt-sub">Aviso de entrega</span></button>
+    <button class="opt" onclick="setWppTipo('pix',this)"><span class="opt-name">💸 Dados Pix</span><span class="opt-sub">Cobrança</span></button>
+  </div>
+
+  <!-- CATÁLOGO -->
+  <div id="wpp-bloco-catalogo">
+    <div class="section-label">Selecionar produtos</div>
+    <div class="card" style="padding:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <span style="font-size:15px;color:var(--ink)">Selecionar produtos</span>
+        <button class="btn-outline" onclick="toggleTodosProd()" style="font-size:12px">Todos</button>
+      </div>
+      <div id="wpp-prod-lista"></div>
+    </div>
+  </div>
+
+  <!-- CONFIRMAR PEDIDO -->
+  <div id="wpp-bloco-pedido" style="display:none">
+    <div class="section-label">Dados do pedido</div>
+    <div class="card" style="padding:14px">
+      <div class="field"><label>Produto</label><input id="wpp-ped-prod" type="text" placeholder="Ex: Legging Fitmax P"></div>
+      <div class="field"><label>Valor</label><input id="wpp-ped-valor" type="text" placeholder="R$ 89"></div>
+      <div class="field"><label>Pagamento</label>
+        <select id="wpp-ped-pag">
+          <option>Pix</option>
+          <option>Dinheiro</option>
+          <option>Cartão</option>
+        </select>
+      </div>
+      <div class="field"><label>Endereço de entrega</label><input id="wpp-ped-end" type="text" placeholder="Rua, número ou ponto de referência"></div>
+      <div class="section-label" style="margin-top:16px">Previsão de entrega</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px" id="wpp-prev-tabs">
+        <button class="opt on" onclick="setPrevisao('30 minutos',this)"><span class="opt-name">30 min</span></button>
+        <button class="opt" onclick="setPrevisao('60 minutos',this)"><span class="opt-name">1 hora</span></button>
+        <button class="opt" onclick="setPrevisao('2 horas',this)"><span class="opt-name">2 horas</span></button>
+        <button class="opt" onclick="setPrevisao('hoje',this)"><span class="opt-name">Hoje</span></button>
+        <button class="opt" onclick="setPrevisao('amanhã',this)"><span class="opt-name">Amanhã</span></button>
+        <button class="opt" onclick="setPrevisao('2 dias',this)"><span class="opt-name">2 dias</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ENTREGA -->
+  <div id="wpp-bloco-entrega" style="display:none">
+    <div class="section-label">Previsão de entrega</div>
+    <div class="card" style="padding:14px">
+      <div class="field"><label>Produto entregue</label><input id="wpp-ent-prod" type="text" placeholder="Ex: Legging Fitmax P"></div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px" id="wpp-ent-prev-tabs">
+        <button class="opt on" onclick="setEntregaPrev('30 minutos',this)"><span class="opt-name">30 min</span></button>
+        <button class="opt" onclick="setEntregaPrev('60 minutos',this)"><span class="opt-name">1 hora</span></button>
+        <button class="opt" onclick="setEntregaPrev('2 horas',this)"><span class="opt-name">2 horas</span></button>
+        <button class="opt" onclick="setEntregaPrev('hoje',this)"><span class="opt-name">Hoje</span></button>
+        <button class="opt" onclick="setEntregaPrev('amanhã',this)"><span class="opt-name">Amanhã</span></button>
+        <button class="opt" onclick="setEntregaPrev('2 dias',this)"><span class="opt-name">2 dias</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PIX -->
+  <div id="wpp-bloco-pix" style="display:none">
+    <div class="section-label">Chave Pix</div>
+    <div class="card" style="padding:14px">
+      <div id="wpp-pix-lista"></div>
+      <button class="btn-outline" style="width:100%;justify-content:center;margin-top:12px" onclick="addChavePix()">
+        + Adicionar chave Pix
+      </button>
+    </div>
+    <div class="field" style="padding:0 2px"><label>Valor a cobrar</label><input id="wpp-pix-valor" type="text" placeholder="R$ 89"></div>
+  </div>
+
+  <!-- CLIENTE -->
+  <div class="section-label" style="margin-top:8px">Enviar para</div>
+  <div class="card" style="padding:14px">
+    <div class="field" style="margin-bottom:0">
+      <label>Selecionar cliente</label>
+      <select id="wpp-cliente-sel" onchange="selecionarClienteWpp(this.value)">
+        <option value="">Escolher cliente cadastrado...</option>
+      </select>
+    </div>
+    <div id="wpp-cliente-manual" style="margin-top:12px">
+      <div class="field" style="margin-bottom:0"><label>Ou digitar número</label><input id="wpp-numero" type="tel" placeholder="(44) 99999-0000"></div>
+    </div>
+  </div>
+
+  <!-- PREVIEW -->
+  <button class="btn-primary" onclick="gerarMsgWpp()" style="margin-bottom:16px">
+    Gerar mensagem
+  </button>
+
+  <div id="wpp-preview-wrap" style="display:none">
+    <div class="section-label">Mensagem gerada</div>
+    <div style="background:var(--white);border:1px solid var(--warm);border-radius:2px;padding:16px;margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--warm)">
+        <div style="width:38px;height:38px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.117 1.528 5.845L.057 23.885l6.248-1.638A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.891 0-3.667-.502-5.2-1.378l-.373-.22-3.862 1.013 1.033-3.77-.242-.386A9.944 9.944 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+        </div>
+        <div>
+          <div style="font-size:16px;font-weight:500;color:var(--ink)" id="wpp-dest-nome">Cliente</div>
+          <div style="font-size:13px;color:var(--muted)" id="wpp-dest-num"></div>
+        </div>
+      </div>
+      <div id="wpp-msg-preview" style="font-size:15px;line-height:1.8;color:var(--ink);white-space:pre-wrap;background:#DCF8C6;border-radius:0 12px 12px 12px;padding:14px"></div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn-primary" style="flex:1" onclick="copiarMsgWpp()">Copiar mensagem</button>
+      <button onclick="enviarWhatsApp()" style="flex:1;padding:16px;background:#25D366;color:#fff;border:none;border-radius:2px;font-family:'Jost',sans-serif;font-size:13px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.117 1.528 5.845L.057 23.885l6.248-1.638A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.891 0-3.667-.502-5.2-1.378l-.373-.22-3.862 1.013 1.033-3.77-.242-.386A9.944 9.944 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+        Abrir WhatsApp
+      </button>
+    </div>
+  </div>
+
+  <!-- ENTREGADORES -->
+  <div class="section-label" style="margin-top:24px">Entregadores</div>
+  <div class="card">
+    <div class="list-item">
+      <div class="avatar">MT</div>
+      <div class="list-main"><div class="list-title">Mototaxi parceiro</div><div class="list-sub" id="moto1">Adicionar contato</div></div>
+      <button class="btn-outline" onclick="editMoto('moto1')"><i class="ti ti-edit"></i></button>
+    </div>
+    <div class="list-item">
+      <div class="avatar">E2</div>
+      <div class="list-main"><div class="list-title">Entregador 2</div><div class="list-sub" id="moto2">Adicionar contato</div></div>
+      <button class="btn-outline" onclick="editMoto('moto2')"><i class="ti ti-edit"></i></button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ CONTEÚDO ══════════════ -->
+<div id="sc-conteudo" class="screen">
+  <div class="page-title">Conteúdo</div>
+  <div class="page-sub">Gere prompts para o Gemini criar suas artes e legendas</div>
+
+  <!-- PASSO 1: PRODUTO -->
+  <div class="section-label">1 — Produto</div>
+  <div class="card" style="padding:14px">
+    <div class="field">
+      <label>Selecionar do catálogo</label>
+      <select id="c-sel" onchange="selecionarProdConteudo(this.value)">
+        <option value="">Escolher produto...</option>
+      </select>
+    </div>
+    <div id="c-prod-info" style="display:none;background:var(--paper);border-radius:2px;padding:12px;margin-top:4px">
+      <div style="font-size:18px;font-weight:400;color:var(--ink)" id="c-prod-nome"></div>
+      <div style="font-size:15px;color:var(--muted);margin-top:4px" id="c-prod-det"></div>
+    </div>
+  </div>
+
+  <!-- PASSO 2: FORMATO -->
+  <div class="section-label">2 — Formato do post</div>
+  <div class="grid2" id="fmt-tabs">
+    <button class="opt on" onclick="sFmt2('quadrado',this)">
+      <span class="opt-name">⬛ Post quadrado</span>
+      <span class="opt-sub">1:1 — Feed</span>
+    </button>
+    <button class="opt" onclick="sFmt2('retrato',this)">
+      <span class="opt-name">▬ Post retrato</span>
+      <span class="opt-sub">4:5 — Feed</span>
+    </button>
+    <button class="opt" onclick="sFmt2('stories',this)">
+      <span class="opt-name">📱 Stories</span>
+      <span class="opt-sub">9:16 — Stories/Reels</span>
+    </button>
+    <button class="opt" onclick="sFmt2('carrossel',this)">
+      <span class="opt-name">🖼 Carrossel</span>
+      <span class="opt-sub">Vários slides</span>
+    </button>
+  </div>
+
+  <!-- PASSO 3: TOM -->
+  <div class="section-label">3 — Tom e estilo</div>
+  <div class="grid2" id="tom-tabs">
+    <button class="opt on" onclick="sTom2('elegante',this)">
+      <span class="opt-name">✨ Elegante</span>
+      <span class="opt-sub">Sofisticado, minimalista</span>
+    </button>
+    <button class="opt" onclick="sTom2('motivacional',this)">
+      <span class="opt-name">💪 Motivacional</span>
+      <span class="opt-sub">Energia, treino, força</span>
+    </button>
+    <button class="opt" onclick="sTom2('descontraido',this)">
+      <span class="opt-name">😊 Descontraído</span>
+      <span class="opt-sub">Leve, próximo, divertido</span>
+    </button>
+    <button class="opt" onclick="sTom2('vendedor',this)">
+      <span class="opt-name">🔥 Direto</span>
+      <span class="opt-sub">Urgência, oferta, CTA</span>
+    </button>
+  </div>
+
+  <!-- PASSO 4: FUNDO -->
+  <div class="section-label">4 — Fundo da imagem</div>
+  <div class="grid2" id="fundo-tabs">
+    <button class="opt on" onclick="setFundo('substituir',this)">
+      <span class="opt-name">🔄 Substituir fundo</span>
+      <span class="opt-sub">Foto de espelho/casa</span>
+    </button>
+    <button class="opt" onclick="setFundo('manter',this)">
+      <span class="opt-name">✅ Manter fundo</span>
+      <span class="opt-sub">Fundo já é bonito</span>
+    </button>
+  </div>
+
+  <!-- PASSO 5: PALETA -->
+  <div class="section-label">5 — Paleta de cores</div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px" id="pal-tabs">
+    <button class="opt on" onclick="setPal('neutro',this)" style="padding:10px 4px">
+      <div style="width:20px;height:20px;border-radius:50%;background:#C8BEB2;margin:0 auto 6px;border:1px solid rgba(0,0,0,.08)"></div>
+      <span class="opt-sub">Neutro</span>
+    </button>
+    <button class="opt" onclick="setPal('escuro',this)" style="padding:10px 4px">
+      <div style="width:20px;height:20px;border-radius:50%;background:#1a1a1a;margin:0 auto 6px"></div>
+      <span class="opt-sub">Escuro</span>
+    </button>
+    <button class="opt" onclick="setPal('rosé',this)" style="padding:10px 4px">
+      <div style="width:20px;height:20px;border-radius:50%;background:#D4A0A8;margin:0 auto 6px"></div>
+      <span class="opt-sub">Rosé</span>
+    </button>
+    <button class="opt" onclick="setPal('terra',this)" style="padding:10px 4px">
+      <div style="width:20px;height:20px;border-radius:50%;background:#8B6F47;margin:0 auto 6px"></div>
+      <span class="opt-sub">Terra</span>
+    </button>
+  </div>
+
+  <button class="btn-primary" onclick="gerarPrompts()" style="margin-bottom:28px">
+    Gerar prompts para o Gemini
+  </button>
+
+  <!-- RESULTADO -->
+  <div id="res-prompts" style="display:none">
+
+    <div class="section-label">Prompt completo — arte + legenda</div>
+    <div style="background:var(--ink);border-radius:2px;padding:18px;margin-bottom:12px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)"></div>
+      <div style="font-size:14px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;font-weight:400">Cole no Gemini + anexe a foto da roupa</div>
+      <div id="prompt-completo" style="font-size:16px;color:rgba(255,255,255,.7);line-height:1.9;white-space:pre-wrap;margin-bottom:16px;font-weight:300"></div>
+      <div style="display:flex;gap:8px">
+        <button onclick="cpPromptCompleto()" style="flex:1;padding:13px;background:var(--gold);color:var(--ink);border:none;border-radius:2px;font-family:'Jost',sans-serif;font-size:15px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;cursor:pointer">
+          Copiar prompt
+        </button>
+        <button onclick="window.open('https://gemini.google.com/app','_blank')" style="padding:13px 16px;background:transparent;border:1px solid var(--gold);color:var(--gold);border-radius:2px;font-family:'Jost',sans-serif;font-size:15px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer">
+          Abrir Gemini ↗
+        </button>
+      </div>
+    </div>
+
+    <div style="background:var(--paper);border:1px solid var(--warm);border-radius:2px;padding:14px;font-size:16px;color:var(--muted);line-height:1.8">
+      <strong style="color:var(--ink);display:block;margin-bottom:8px">Como usar:</strong>
+      <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px">
+        <span style="background:var(--ink);color:var(--gold);width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;margin-top:1px">1</span>
+        Copie o prompt acima
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px">
+        <span style="background:var(--ink);color:var(--gold);width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;margin-top:1px">2</span>
+        Abra o Gemini, cole o prompt e <strong style="color:var(--ink)">anexe a foto da roupa</strong>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:8px">
+        <span style="background:var(--ink);color:var(--gold);width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;margin-top:1px">3</span>
+        O Gemini entrega a imagem editada + a legenda pronta
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ CONTATOS ══════════════ -->
+<div id="sc-contatos" class="screen">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:20px">
+    <div><div class="page-title">Contatos</div><div class="page-sub">Clientes e fornecedores</div></div>
+    <button class="btn-gold" onclick="toggleForm('form-contato')">+ Novo</button>
+  </div>
+
+  <div id="form-contato" class="card hidden">
+    <div class="card-title">Novo contato</div>
+    <div class="grid2" id="contato-tipo-tabs">
+      <button class="opt on" onclick="setContatoTipo('cliente',this)"><span class="opt-name">Cliente</span></button>
+      <button class="opt" onclick="setContatoTipo('fornecedor',this)"><span class="opt-name">Fornecedor</span></button>
+    </div>
+    <div class="field"><label>Nome</label><input id="ct-nome" type="text" placeholder="Nome completo"></div>
+    <div class="field"><label>WhatsApp</label><input id="ct-wpp" type="tel" placeholder="(44) 99999-0000"></div>
+    <div class="field"><label>Cidade</label><input id="ct-cidade" type="text" placeholder="Montes Claros"></div>
+    <div class="field" id="ct-prod-field"><label>Produto / Fornece</label><input id="ct-prod" type="text" placeholder="Ex: Leggings caneladas"></div>
+    <div class="btn-row">
+      <button class="btn-primary" onclick="salvarContato()">Salvar</button>
+      <button class="btn-outline" onclick="toggleForm('form-contato')">Cancelar</button>
+    </div>
+  </div>
+
+  <div class="grid2" id="contato-filter-tabs" style="margin-bottom:16px">
+    <button class="opt on" onclick="filtContatos('todos',this)"><span class="opt-name">Todos</span></button>
+    <button class="opt" onclick="filtContatos('cliente',this)"><span class="opt-name">Clientes</span></button>
+    <button class="opt" onclick="filtContatos('fornecedor',this)"><span class="opt-name">Fornecedores</span></button>
+  </div>
+
+  <div id="lista-contatos"></div>
+</div>
+
+<!-- ══════════════ CONFIGURAÇÕES ══════════════ -->
+<div id="sc-config" class="screen">
+  <div class="page-title">Configurações</div>
+  <div class="page-sub">Conexão com Google Sheets</div>
+
+  <div class="card" style="background:var(--ink);border-color:var(--ink);position:relative;overflow:hidden">
+    <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)"></div>
+    <div style="font-size:14px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;font-weight:400">Google Sheets</div>
+    <div style="font-size:16px;color:rgba(255,255,255,.5);line-height:1.7;margin-bottom:14px;font-weight:300">
+      Cole aqui a URL do seu Apps Script para sincronizar todos os dados com o Google Sheets em tempo real.
+    </div>
+    <div class="field" style="margin-bottom:14px">
+      <label style="color:rgba(255,255,255,.4)">URL do Apps Script</label>
+      <input id="sheets-url" type="url" placeholder="https://script.google.com/macros/s/..." 
+        style="border-bottom-color:rgba(255,255,255,.15);color:#fff;padding:11px 0">
+    </div>
+    <div id="sheets-status" style="display:none;font-size:16px;padding:10px;border-radius:2px;margin-bottom:12px"></div>
+    <div class="btn-row">
+      <button class="btn-primary" style="background:var(--gold);color:var(--ink)" onclick="conectarSheets()">Conectar</button>
+      <button class="btn-outline" style="border-color:rgba(255,255,255,.2);color:rgba(255,255,255,.5)" onclick="testarSheets()">Testar conexão</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Status da sincronização</div>
+    <div class="list-item">
+      <div class="prod-ico"><i class="ti ti-shirt"></i></div>
+      <div class="list-main"><div class="list-title">Produtos</div><div class="list-sub" id="sync-produtos">Não sincronizado</div></div>
+      <button class="btn-outline" onclick="sincronizar('produtos')"><i class="ti ti-refresh"></i></button>
+    </div>
+    <div class="list-item">
+      <div class="prod-ico"><i class="ti ti-clipboard-list"></i></div>
+      <div class="list-main"><div class="list-title">Pedidos</div><div class="list-sub" id="sync-pedidos">Não sincronizado</div></div>
+      <button class="btn-outline" onclick="sincronizar('pedidos')"><i class="ti ti-refresh"></i></button>
+    </div>
+    <div class="list-item">
+      <div class="prod-ico"><i class="ti ti-address-book"></i></div>
+      <div class="list-main"><div class="list-title">Clientes</div><div class="list-sub" id="sync-clientes">Não sincronizado</div></div>
+      <button class="btn-outline" onclick="sincronizar('clientes')"><i class="ti ti-refresh"></i></button>
+    </div>
+    <div class="list-item">
+      <div class="prod-ico"><i class="ti ti-cash"></i></div>
+      <div class="list-main"><div class="list-title">Caixa</div><div class="list-sub" id="sync-caixa">Não sincronizado</div></div>
+      <button class="btn-outline" onclick="sincronizar('caixa')"><i class="ti ti-refresh"></i></button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Estoque em lote</div>
+    <div style="font-size:16px;color:var(--muted);line-height:1.6;margin-bottom:14px">Atualize várias quantidades de uma vez sem precisar ir produto por produto.</div>
+    <div id="estoque-lote"></div>
+    <button class="btn-primary" style="margin-top:12px" onclick="salvarEstoqueLote()">Salvar todas as quantidades</button>
+  </div>
+</div>
+
+</body>
+</html>
